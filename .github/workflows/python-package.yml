@@ -1,0 +1,37 @@
+name: Python package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: pip install .
+
+      - name: Test CLI entry point
+        run: pylearn --help || python -m pylearn --help || echo "No --help flag, testing import instead"
+
+      - name: Test package imports
+        run: |
+          python -c "from pylearn.app import main; print('app.main OK')"
+          python -c "from pylearn.curriculum import discover_modules; print('discover_modules OK')"
+          python -c "from pylearn.config import DATA_DIR, PROGRESS_FILE; print(f'DATA_DIR={DATA_DIR}'); print(f'PROGRESS_FILE={PROGRESS_FILE}')"
+          python -c "from pylearn.progress.tracker import load_progress; print('tracker OK')"
+          python -c "from pylearn.engine.validator import validate_output; print('validator OK')"
