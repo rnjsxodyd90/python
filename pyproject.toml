@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pylearn-cli"
+dynamic = ["version"]
+description = "Interactive Python Learning CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+
+[project.scripts]
+pylearn = "pylearn.app:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "pylearn.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["pylearn*"]

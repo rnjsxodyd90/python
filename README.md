@@ -4,12 +4,19 @@ An interactive, terminal-based Python learning tool covering beginner-to-advance
 
 **Zero external dependencies** -- pure Python stdlib.
 
+## Installation
+
+```bash
+pip install .          # install from source
+pip install -e .       # editable/dev install
+```
+
 ## Quick Start
 
 ```bash
-python run.py
-# or
-python -m pylearn
+pylearn                # run via installed command
+python -m pylearn      # alternative
+python run.py          # run without installing
 ```
 
 ## What's Included
@@ -38,7 +45,8 @@ python -m pylearn
 
 ```
 python/
-├── run.py                    # Entry point
+├── run.py                    # Entry point (dev)
+├── pyproject.toml            # Package metadata
 ├── pylearn/
 │   ├── app.py                # Main app loop & routing
 │   ├── cli.py                # Menus, prompts, display
@@ -53,10 +61,6 @@ python/
 │       ├── 04_functions/
 │       ├── 05_oop/
 │       └── 10_interview_prep/
-└── data/
-    └── progress.json         # Auto-created on first run
+~/.pylearn/
+└── progress.json             # Auto-created on first run
 ```
-
-## Adding New Modules
-
-Create a numbered directory under `pylearn/curriculum/` (e.g., `06_error_handling/`) with an `__init__.py` that exports a `module` variable of type `Module`. The auto-discovery system will pick it up automatically.

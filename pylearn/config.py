@@ -2,11 +2,8 @@
 
 import os
 
-# Root of the project (directory containing run.py)
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Data directory for progress persistence
-DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+# Data directory for progress persistence (stored in user's home directory)
+DATA_DIR = os.path.join(os.path.expanduser("~"), ".pylearn")
 PROGRESS_FILE = os.path.join(DATA_DIR, "progress.json")
 
 # App metadata
