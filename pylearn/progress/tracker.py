@@ -48,15 +48,20 @@ def save_progress(data):
     _ensure_data_dir()
     data["updated_at"] = time.time()
 
+    # Backup existing progress before overwriting
+    if os.path.exists(PROGRESS_FILE):
+        backup_path = PROGRESS_FILE + ".backup"
+        try:
+            import shutil
+            shutil.copy2(PROGRESS_FILE, backup_path)
+        except OSError:
+            pass  # Non-critical -- continue saving
+
     tmp_path = PROGRESS_FILE + ".tmp"
     with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
-    # Atomic rename (on Windows, need to remove target first)
-    if os.path.exists(PROGRESS_FILE):
-        os.replace(tmp_path, PROGRESS_FILE)
-    else:
-        os.rename(tmp_path, PROGRESS_FILE)
+    os.replace(tmp_path, PROGRESS_FILE)
 
 
 def _update_streak(data):

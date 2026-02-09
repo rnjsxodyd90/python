@@ -45,16 +45,21 @@ def run_code(code, timeout_hint=5, pre_code="", namespace=None):
         with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
             exec(compile(full_code, "<user_code>", "exec"), namespace)
 
+        stdout = stdout_capture.getvalue()
+        if len(stdout) > 50_000:
+            stdout = stdout[:50_000] + "\n... (output truncated)"
+
         return ExecutionResult(
-            stdout=stdout_capture.getvalue(),
+            stdout=stdout,
             stderr=stderr_capture.getvalue(),
             namespace=namespace,
         )
     except SyntaxError as e:
+        location = f" (line {e.lineno})" if e.lineno is not None else ""
         return ExecutionResult(
             stdout=stdout_capture.getvalue(),
             stderr=stderr_capture.getvalue(),
-            error=f"SyntaxError: {e.msg} (line {e.lineno})",
+            error=f"SyntaxError: {e.msg}{location}",
         )
     except Exception as e:
         tb_lines = traceback.format_exception(type(e), e, e.__traceback__)

@@ -22,6 +22,14 @@ from pylearn.progress.stats import get_dashboard_stats
 
 def main():
     """Entry point for PyLearn."""
+    # Handle CLI flags when invoked via `pylearn` command
+    import sys
+    args = sys.argv[1:]
+    if args:
+        from pylearn.__main__ import cli
+        cli()
+        return
+
     modules = discover_modules()
 
     if not modules:

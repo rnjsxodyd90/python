@@ -28,15 +28,19 @@ def get_dashboard_stats(modules):
 
     streak = data.get("streak", {})
 
+    # Use sets for O(1) lookups instead of scanning lists
+    lessons_set = set(data.get("lessons_completed", []))
+    exercises_set = set(data.get("exercises_completed", []))
+
     # Per-module breakdown
     module_stats = []
     for m in modules:
         m_lessons = len(m.lessons)
         m_done = sum(1 for l in m.lessons
-                     if f"{m.id}/{l.id}" in data.get("lessons_completed", []))
+                     if f"{m.id}/{l.id}" in lessons_set)
         m_exercises = len(m.exercises)
         m_ex_done = sum(1 for e in m.exercises
-                        if f"{m.id}/{e.id}" in data.get("exercises_completed", []))
+                        if f"{m.id}/{e.id}" in exercises_set)
         m_quiz = quiz_scores.get(m.id)
 
         pct = round(m_done / m_lessons * 100) if m_lessons > 0 else 0
