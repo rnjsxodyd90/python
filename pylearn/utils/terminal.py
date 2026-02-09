@@ -61,6 +61,49 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+# Force UTF-8 output on Windows to support box-drawing characters
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+
+def _supports_unicode():
+    """Check if stdout can encode Unicode box-drawing characters."""
+    try:
+        "═─┌┐└┘│█░".encode(sys.stdout.encoding or "ascii")
+        return True
+    except (UnicodeEncodeError, LookupError):
+        return False
+
+
+_unicode_enabled = _supports_unicode()
+
+# Box-drawing characters with ASCII fallbacks
+if _unicode_enabled:
+    BOX_H = "─"
+    BOX_H2 = "═"
+    BOX_TL = "┌"
+    BOX_TR = "┐"
+    BOX_BL = "└"
+    BOX_BR = "┘"
+    BOX_V = "│"
+    BAR_FULL = "█"
+    BAR_EMPTY = "░"
+    BULLET = "*"
+else:
+    BOX_H = "-"
+    BOX_H2 = "="
+    BOX_TL = "+"
+    BOX_TR = "+"
+    BOX_BL = "+"
+    BOX_BR = "+"
+    BOX_V = "|"
+    BAR_FULL = "#"
+    BAR_EMPTY = "."
+    BULLET = "*"
+
 
 def colorize(text, *codes):
     """Wrap text in ANSI color codes."""
@@ -120,8 +163,10 @@ def get_terminal_size():
         return 80, 24
 
 
-def print_separator(char="─", width=None):
+def print_separator(char=None, width=None):
     """Print a horizontal separator line."""
+    if char is None:
+        char = BOX_H
     if width is None:
         width = min(get_terminal_size()[0], 80)
     print(dim(char * width))
@@ -131,11 +176,11 @@ def print_header(title, subtitle=None):
     """Print a styled header."""
     width = min(get_terminal_size()[0], 80)
     print()
-    print_separator("═", width)
+    print_separator(BOX_H2, width)
     print(header_style(f"  {title}"))
     if subtitle:
         print(dim(f"  {subtitle}"))
-    print_separator("═", width)
+    print_separator(BOX_H2, width)
     print()
 
 
@@ -143,11 +188,11 @@ def print_box(text, style="info"):
     """Print text in a simple box."""
     width = min(get_terminal_size()[0], 76)
     color_fn = {"info": info, "success": success, "error": error, "warning": warning}.get(style, info)
-    print(f"  {color_fn('┌' + '─' * (width - 4) + '┐')}")
+    print(f"  {color_fn(BOX_TL + BOX_H * (width - 4) + BOX_TR)}")
     for line in text.split("\n"):
         padding = width - 6 - len(line)
         if padding < 0:
             line = line[:width - 9] + "..."
             padding = 0
-        print(f"  {color_fn('│')} {line}{' ' * padding} {color_fn('│')}")
-    print(f"  {color_fn('└' + '─' * (width - 4) + '┘')}")
+        print(f"  {color_fn(BOX_V)} {line}{' ' * padding} {color_fn(BOX_V)}")
+    print(f"  {color_fn(BOX_BL + BOX_H * (width - 4) + BOX_BR)}")

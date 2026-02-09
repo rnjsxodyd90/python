@@ -278,10 +278,11 @@ def show_progress_dashboard(stats):
 
 def _progress_bar(pct, width=30):
     """Create a text progress bar."""
+    from pylearn.utils.terminal import BAR_FULL, BAR_EMPTY
     filled = int(width * pct / 100)
     empty = width - filled
     bar_color = Color.BRIGHT_GREEN if pct >= 70 else Color.BRIGHT_YELLOW if pct >= 30 else Color.BRIGHT_RED
-    bar = colorize("█" * filled, bar_color) + dim("░" * empty)
+    bar = colorize(BAR_FULL * filled, bar_color) + dim(BAR_EMPTY * empty)
     return f"[{bar}]"
 
 

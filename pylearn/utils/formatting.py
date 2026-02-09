@@ -20,10 +20,11 @@ def indent_code(code, spaces=4):
 
 def format_code_block(code, language="python"):
     """Format a code block for display."""
+    from pylearn.utils.terminal import BOX_V
     lines = code.strip().split("\n")
     result = []
     for i, line in enumerate(lines, 1):
-        result.append(f"  {i:3d} │ {line}")
+        result.append(f"  {i:3d} {BOX_V} {line}")
     return "\n".join(result)
 
 
